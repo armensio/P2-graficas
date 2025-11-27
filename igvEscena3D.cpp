@@ -10,44 +10,27 @@
 #include "igvEscena3D.h"
 #include "igvMallaTriangulos.h"
 
-
-// M�todos constructores
-
-/**
- * Constructor por defecto
- */
+// Constructor por defecto
 igvEscena3D::igvEscena3D()
 {
-    // TODO: Apartado B: Inserta el c�digo para crear un cilindro
-    //malla = new igvCilindro(1,1,40,5);
-
     try {
         modeloImportado = cargarOBJ("../Sniper_Rifle.obj");
         std::cout << "Modelo cargado correctamente." << std::endl;
-
     } catch (const std::exception& e) {
         std::cerr << "Error al cargar el archivo: " << e.what() << std::endl;
     }
 }
 
-/**
- * Destructor
- */
+// Destructor
 igvEscena3D::~igvEscena3D()
 {
-    if (malla != nullptr)
-    {
+    if (malla != nullptr) {
         delete malla;
         malla = nullptr;
     }
 }
 
-
-// M�todos p�blicos
-
-/**
- * M�todo para pintar los ejes coordenados llamando a funciones de OpenGL
- */
+// Método para pintar los ejes coordenados
 void igvEscena3D::pintar_ejes()
 {
     GLfloat rojo[] = {1, 0, 0, 1.0};
@@ -73,64 +56,31 @@ void igvEscena3D::pintar_ejes()
     glEnd();
 }
 
-// Dibuja un cilindro (asumiendo que está a lo largo del eje Y después de la transformación).
+// Dibuja un cilindro
 void dibujaCilindro(float radio, float altura) {
     GLUquadric *quad = gluNewQuadric();
     gluCylinder(quad, radio, radio, altura, 30, 30);
     gluDeleteQuadric(quad);
 }
 
-/**
- * M�todo con las llamadas OpenGL para visualizar la escena
- */
-void igvEscena3D::visualizar(void)
+// Convierte un ID de parte a un color RGB único
+void idAColor(PartesCuerpo id) {
+    unsigned char r = ((id >> 0) & 0xFF);
+    unsigned char g = ((id >> 8) & 0xFF);
+    unsigned char b = ((id >> 16) & 0xFF);
+    glColor3ub(r, g, b);
+}
+
+// Dibuja el cuerpo completo (versión normal para visualización)
+void igvEscena3D::dibujarCuerpoCompleto()
 {
-    GLfloat color_malla[] = {0, 0.25,0};
-    // crear luces
-    GLfloat luz0[4] = {5, 5, 5, 1}; // luz puntual para visualizar el cubo
-
-    glLightfv(GL_LIGHT0, GL_POSITION, luz0); // la luz se coloca aquí si permanece fija y no se mueve con la escena
-    glEnable(GL_LIGHT0);
-
-    // se pintan los ejes
-    if (ejes) pintar_ejes();
-
-    // crear el modelo
-    glPushMatrix(); // guarda la matriz de modelado
-
-    glTranslatef(0,0,rotX);
-    //glRotatef(rotX, 1, 0, 0);
-    glRotatef(rotY, 0, 1, 0);
-    glRotatef(rotZ, 0, 0, 1);
-
-
-    //glLightfv(GL_LIGHT0,GL_POSITION,luz0); // la luz se coloca aquí si se mueve junto con la escena
+    GLfloat color_malla[] = {0, 0.25, 0};
     glMaterialfv(GL_FRONT, GL_EMISSION, color_malla);
 
-
-    // Apartado B: la siguiente llamada hay que sustituirla por la llamada al método visualizar de la malla
-    /*GLUquadric* cyl = gluNewQuadric();
-    gluCylinder(cyl, 1, 1, 1, 20, 5);
-    gluDeleteQuadric(cyl);
-    cyl=nullptr;*/
-    //malla->visualizar();
-
-/*
-    //Cabeza
+    // Cabeza
     glPushMatrix();
-    glTranslatef(0.0, 1.25, 0.0); // Posiciona la cabeza por encima del cuerpo
+    glTranslatef(0.0, 1.25, 0.0);
     glutSolidSphere(0.2, 30, 30);
-    glPopMatrix();
-
-    // Manos
-    glPushMatrix();
-    glTranslatef(0.25, 0.57, 0.0);
-    glutSolidSphere(0.05, 30, 30);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(-0.25, 0.57, 0.0);
-    glutSolidSphere(0.05, 30, 30);
     glPopMatrix();
 
     // Cuerpo
@@ -140,19 +90,79 @@ void igvEscena3D::visualizar(void)
     glutSolidCube(1.0);
     glPopMatrix();
 
-    // Brazos
+    // --- Brazo Izquierdo ---
     glPushMatrix();
-    glTranslatef(0.25, 1.0, 0.0); // Posición inicial
-    glRotatef(90,1,0,0);
-    dibujaCilindro(0.05, 0.4); // Radio, Altura
+    glTranslatef(-0.25, 1.0, 0.0);
+    glRotatef(anguloBrazoX, 1.0, 0.0, 0.0);
+
+    // Brazo Superior Izquierdo
+    glPushMatrix();
+    glRotatef(90, 1, 0, 0);
+    dibujaCilindro(0.05, 0.2);
     glPopMatrix();
 
+    // Articulación Codo Izquierdo
+    glTranslatef(0.0, -0.2, 0.0);
+    glRotatef(anguloCodo, 1.0, 0.0, 0.0);
+
+    // Antebrazo Izquierdo
     glPushMatrix();
-    glTranslatef(-0.25, 1.0, 0.0); // Posición inicial
-    glRotatef(90,1,0,0);
-    dibujaCilindro(0.05, 0.4);
+    glRotatef(90, 1, 0, 0);
+    dibujaCilindro(0.045, 0.2);
     glPopMatrix();
 
+    // Mano Izquierda
+    glPushMatrix();
+    glTranslatef(0.0, -0.2, 0.0);
+    glutSolidSphere(0.05, 30, 30);
+    glPopMatrix();
+
+    glPopMatrix(); // Fin Brazo Izquierdo
+
+    // --- Brazo Derecho ---
+    glPushMatrix();
+    glTranslatef(0.25, 1.0, 0.0);
+    glRotatef(anguloBrazoX, 1.0, 0.0, 0.0);
+
+    // Brazo Superior Derecho
+    glPushMatrix();
+    glRotatef(90, 1, 0, 0);
+    dibujaCilindro(0.05, 0.2);
+    glPopMatrix();
+
+    // Articulación Codo Derecho
+    glTranslatef(0.0, -0.2, 0.0);
+    glRotatef(anguloCodo, 1.0, 0.0, 0.0);
+
+    // Antebrazo Derecho
+    glPushMatrix();
+    glRotatef(90, 1, 0, 0);
+    dibujaCilindro(0.045, 0.2);
+    glPopMatrix();
+
+    // Mano Derecha
+    glPushMatrix();
+    glTranslatef(0.0, -0.2, 0.0);
+    glutSolidSphere(0.05, 30, 30);
+    glPopMatrix();
+
+    // Arma
+    if(modeloImportado != nullptr) {
+        GLfloat color_pieza[] = {0, 0, 0};
+        glMaterialfv(GL_FRONT, GL_EMISSION, color_pieza);
+
+        glPushMatrix();
+        glTranslatef(0.0, -0.23, 0.0);
+        glRotatef(anguloArmaZ, 0.0, 0.0, 1.0);
+        glRotatef(anguloArmaX, 1.0, 0.0, 0.0);
+        glRotatef(90, 1, 0, 0);
+        glRotatef(-90, 0, 1, 0);
+        glScalef(0.1, 0.1, 0.1);
+        modeloImportado->visualizar();
+        glPopMatrix();
+    }
+
+    glPopMatrix(); // Fin Brazo Derecho
 
     // Piernas
     glPushMatrix();
@@ -170,136 +180,6 @@ void igvEscena3D::visualizar(void)
     // Pies
     glPushMatrix();
     glTranslatef(0.1, 0, 0.1);
-    glScalef(0.1, 0.05, 0.25); // Ancho (X), Altura (Y), Largo (Z)
-    glutSolidCube(1.0);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(-0.1, 0, 0.1);
-    glScalef(0.1, 0.05, 0.25); // Ancho (X), Altura (Y), Largo (Z)
-    glutSolidCube(1.0);
-    glPopMatrix();
-
-
-
-
-
-    if(modeloImportado!=nullptr) {
-        GLfloat color_pieza[] = { 0, 0, 0 };
-        glMaterialfv ( GL_FRONT, GL_EMISSION, color_pieza );
-
-        glPushMatrix();
-        glTranslatef(0.25,0.25,0);
-        glRotatef(90,1,0,0);
-        glRotatef(-90,0,1,0);
-        glScalef(0.1,0.1,0.1);
-        modeloImportado->visualizar();
-        glPopMatrix();
-    }
-*/
-
-    // --- Variables de rotación (Debes definirlas en tu scope, ej. globalmente) ---
-      // Rotación adicional del arma en el eje Y
-// --------------------------------------------------------------------------
-
-/* FUNCIONAAAAAA
-// Cabeza
-    glPushMatrix();
-    glTranslatef(0.0, 1.25, 0.0);
-    glutSolidSphere(0.2, 30, 30);
-    glPopMatrix();
-
-// Cuerpo (sin cambios)
-    glPushMatrix();
-    glTranslatef(0.0, 0.7, 0.0);
-    glScalef(0.4, 0.8, 0.2);
-    glutSolidCube(1.0);
-    glPopMatrix();
-
-// --- Brazo Izquierdo (Sin Arma) y Mano Izquierda ---
-    glPushMatrix();
-// 1. Traslada al hombro izquierdo (punto de pivote del brazo)
-    glTranslatef(-0.25, 1.0, 0.0);
-// 2. Aplica la rotación del brazo en X
-    glRotatef(anguloBrazoX, 1.0, 0.0, 0.0);
-
-    // Brazo Izquierdo (Cilindro)
-    glPushMatrix();
-    // 3. Traslada al centro del cilindro (o donde sea que empiece a dibujarse)
-    glRotatef(90, 1, 0, 0); // Rotación inicial para alineación
-    dibujaCilindro(0.05, 0.4);
-    glPopMatrix();
-
-    // Mano Izquierda (Esfera)
-    glPushMatrix();
-    // 4. Traslada desde el hombro hasta el centro de la mano.
-    // La mano se mueve con la rotación del padre (el brazo).
-    glTranslatef(0.0, -0.4, 0.0); // Mover hacia abajo por la longitud del brazo (0.4)
-    glutSolidSphere(0.05, 30, 30);
-    glPopMatrix();
-
-    glPopMatrix(); // Restaura la matriz del Brazo Izquierdo
-
-// --- Brazo Derecho (Con Arma) y Mano Derecha ---
-    glPushMatrix();
-// 1. Traslada al hombro derecho (punto de pivote del brazo)
-    glTranslatef(0.25, 1.0, 0.0);
-// 2. Aplica la rotación del brazo en X (aplica a brazo, mano y arma)
-    glRotatef(anguloBrazoX, 1.0, 0.0, 0.0);
-
-    // Brazo Derecho (Cilindro)
-    glPushMatrix();
-    glRotatef(90, 1, 0, 0);
-    dibujaCilindro(0.05, 0.4);
-    glPopMatrix();
-
-    // Mano Derecha (Esfera)
-    glPushMatrix();
-    // 3. Traslada desde el hombro hasta el centro de la mano.
-    glTranslatef(0.0, -0.4, 0.0);
-    glutSolidSphere(0.05, 30, 30);
-    glPopMatrix();
-
-    // Arma (Modelo Importado)
-    if(modeloImportado!=nullptr) {
-        GLfloat color_pieza[] = { 0, 0, 0 };
-        glMaterialfv ( GL_FRONT, GL_EMISSION, color_pieza );
-
-        glPushMatrix();
-        // 4. Posiciona el arma al final de la mano (asumiendo que el brazo mide 0.4)
-        glTranslatef(0.0, -0.43, 0.0);
-
-        // 5. APLICA LA ROTACIÓN EXTRA DEL ARMA (Eje X e Y)
-        glRotatef(anguloArmaZ, 0.0, 0.0, 1.0);
-        glRotatef(anguloArmaX, 1.0, 0.0, 0.0);
-
-        // 6. Rotaciones y escalas específicas del modelo
-        glRotatef(90,1,0,0);
-        glRotatef(-90,0,1,0);
-        glScalef(0.1,0.1,0.1);
-        modeloImportado->visualizar();
-        glPopMatrix();
-    }
-    glPopMatrix(); // Restaura la matriz del Brazo Derecho
-
-// --- Resto del cuerpo (sin cambios en la lógica de rotación) ---
-    glMaterialfv(GL_FRONT, GL_EMISSION, color_malla);
-// Piernas (sin cambios)
-    glPushMatrix();
-    glTranslatef(0.1, 0.03, 0.0);
-    glRotatef(-90.0, 1.0, 0.0, 0.0);
-    dibujaCilindro(0.06, 0.28);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(-0.1, 0.03, 0.0);
-    glRotatef(-90.0, 1.0, 0.0, 0.0);
-    dibujaCilindro(0.06, 0.28);
-    glPopMatrix();
-
-// Pies (sin cambios)
-    glPushMatrix();
-    glTranslatef(0.1, 0, 0.1);
     glScalef(0.1, 0.05, 0.25);
     glutSolidCube(1.0);
     glPopMatrix();
@@ -309,174 +189,209 @@ void igvEscena3D::visualizar(void)
     glScalef(0.1, 0.05, 0.25);
     glutSolidCube(1.0);
     glPopMatrix();
-
-    glPopMatrix(); // restaura la matriz de modelado
-
-    */
-
-
-
-// Cabeza
-    glPushMatrix();
-    glTranslatef(0.0, 1.25, 0.0);
-    glutSolidSphere(0.2, 30, 30);
-    glPopMatrix();
-
-    // Cuerpo (sin cambios)
-    glPushMatrix();
-    glTranslatef(0.0, 0.7, 0.0);
-    glScalef(0.4, 0.8, 0.2);
-    glutSolidCube(1.0);
-    glPopMatrix();
-
-// --- Brazo Izquierdo (Sin Arma) y Mano Izquierda ---
-    glPushMatrix();
-// 1. Traslada al hombro izquierdo (punto de pivote del brazo)
-    glTranslatef(-0.25, 1.0, 0.0);
-// 2. Aplica la rotación del brazo en X (Hombro)
-    glRotatef(anguloBrazoX, 1.0, 0.0, 0.0);
-
-    // --- BRAZO SUPERIOR IZQUIERDO ---
-    glPushMatrix();
-    glRotatef(90, 1, 0, 0); // Alineación cilindro
-    dibujaCilindro(0.05, 0.2); // Longitud reducida a la mitad (0.2)
-    glPopMatrix();
-
-    // --- ARTICULACIÓN CODO IZQUIERDO ---
-    glTranslatef(0.0, -0.2, 0.0); // Traslada al final del brazo superior
-
-    // Lógica de límite del codo (Vida real: 0 a 130 grados)
-    //float codoIzq = anguloCodo;
-    //if(codoIzq < 0) codoIzq = 0;
-    //if(codoIzq > 130) codoIzq = 130;
-    glRotatef(anguloCodo, 1.0, 0.0, 0.0); // Rotación del antebrazo
-
-    // --- ANTEBRAZO IZQUIERDO ---
-    glPushMatrix();
-    glRotatef(90, 1, 0, 0);
-    dibujaCilindro(0.045, 0.2); // Segundo cilindro (un poco más fino)
-    glPopMatrix();
-
-    // Mano Izquierda (Esfera)
-    glPushMatrix();
-    // 4. Traslada desde el codo hasta el final del antebrazo
-    glTranslatef(0.0, -0.2, 0.0);
-    glutSolidSphere(0.05, 30, 30);
-    glPopMatrix();
-
-    glPopMatrix(); // Restaura la matriz del Brazo Izquierdo
-
-// --- Brazo Derecho (Con Arma) y Mano Derecha ---
-    glPushMatrix();
-// 1. Traslada al hombro derecho
-    glTranslatef(0.25, 1.0, 0.0);
-// 2. Aplica la rotación del brazo en X (Hombro)
-    glRotatef(anguloBrazoX, 1.0, 0.0, 0.0);
-
-    // --- BRAZO SUPERIOR DERECHO ---
-    glPushMatrix();
-    glRotatef(90, 1, 0, 0);
-    dibujaCilindro(0.05, 0.2); // Longitud 0.2
-    glPopMatrix();
-
-    // --- ARTICULACIÓN CODO DERECHO ---
-    glTranslatef(0.0, -0.2, 0.0); // Traslada al final del brazo superior
-
-    // Lógica de límite del codo
-    //float codoDer = anguloCodo;
-    //if(codoDer < 0) codoDer = 0;
-    //if(codoDer > 130) codoDer = 130;
-    glRotatef(anguloCodo, 1.0, 0.0, 0.0); // Rotación del antebrazo
-
-    // --- ANTEBRAZO DERECHO ---
-    glPushMatrix();
-    glRotatef(90, 1, 0, 0);
-    dibujaCilindro(0.045, 0.2); // Longitud 0.2
-    glPopMatrix();
-
-    // Mano Derecha (Esfera)
-    glPushMatrix();
-    // 3. Traslada desde el codo hasta la mano
-    glTranslatef(0.0, -0.2, 0.0);
-    glutSolidSphere(0.05, 30, 30);
-    glPopMatrix();
-
-    // Arma (Modelo Importado)
-    if(modeloImportado!=nullptr) {
-        GLfloat color_pieza[] = { 0, 0, 0 };
-        glMaterialfv ( GL_FRONT, GL_EMISSION, color_pieza );
-
-        glPushMatrix();
-        // 4. Posiciona el arma al final de la mano (acumulado: -0.2 brazo -0.2 antebrazo = -0.4 total)
-        glTranslatef(0.0, -0.23, 0.0); // -0.2 del codo + -0.03 ajuste mano
-
-        // IMPORTANTE: Como estamos dentro de la matriz del codo, el arma ya sigue al antebrazo.
-
-        // 5. APLICA LA ROTACIÓN EXTRA DEL ARMA (Eje X e Y)
-        glRotatef(anguloArmaZ, 0.0, 0.0, 1.0); // Ajusté a Z según tu código anterior, o Y según petición
-        glRotatef(anguloArmaX, 1.0, 0.0, 0.0);
-
-        // 6. Rotaciones y escalas específicas del modelo
-        glRotatef(90,1,0,0);
-        glRotatef(-90,0,1,0);
-        glScalef(0.1,0.1,0.1);
-        modeloImportado->visualizar();
-        glPopMatrix();
-    }
-    glPopMatrix(); // Restaura la matriz del Brazo Derecho
-
-// --- Resto del cuerpo (sin cambios en la lógica de rotación) ---
-    glMaterialfv(GL_FRONT, GL_EMISSION, color_malla);
-// Piernas (sin cambios)
-    glPushMatrix();
-    glTranslatef(0.1, 0.03, 0.0);
-    glRotatef(-90.0, 1.0, 0.0, 0.0);
-    dibujaCilindro(0.06, 0.28);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(-0.1, 0.03, 0.0);
-    glRotatef(-90.0, 1.0, 0.0, 0.0);
-    dibujaCilindro(0.06, 0.28);
-    glPopMatrix();
-
-// Pies (sin cambios)
-    glPushMatrix();
-    glTranslatef(0.1, 0, 0.1);
-    glScalef(0.1, 0.05, 0.25);
-    glutSolidCube(1.0);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(-0.1, 0, 0.1);
-    glScalef(0.1, 0.05, 0.25);
-    glutSolidCube(1.0);
-    glPopMatrix();
-
-    glPopMatrix(); // restaura la matriz de modelado
-
-
 }
 
-/**
- * M�todo para consultar si hay que dibujar los ejes o no
- * @retval true Si hay que dibujar los ejes
- * @retval false Si no hay que dibujar los ejes
- */
+// Dibuja una parte específica con su color de picking
+void igvEscena3D::dibujarParteConColor(PartesCuerpo parte)
+{
+    // Desactivar iluminación para modo picking
+    glDisable(GL_LIGHTING);
+    idAColor(parte);
+
+    switch(parte) {
+        case BRAZO_SUP_IZQ:
+            glPushMatrix();
+            glTranslatef(-0.25, 1.0, 0.0);
+            glRotatef(anguloBrazoX, 1.0, 0.0, 0.0);
+            glRotatef(90, 1, 0, 0);
+            dibujaCilindro(0.05, 0.2);
+            glPopMatrix();
+            break;
+
+        case BRAZO_INF_IZQ:
+            glPushMatrix();
+            glTranslatef(-0.25, 1.0, 0.0);
+            glRotatef(anguloBrazoX, 1.0, 0.0, 0.0);
+            glTranslatef(0.0, -0.2, 0.0);
+            glRotatef(anguloCodo, 1.0, 0.0, 0.0);
+            glRotatef(90, 1, 0, 0);
+            dibujaCilindro(0.045, 0.2);
+            glPopMatrix();
+            break;
+
+        case BRAZO_SUP_DER:
+            glPushMatrix();
+            glTranslatef(0.25, 1.0, 0.0);
+            glRotatef(anguloBrazoX, 1.0, 0.0, 0.0);
+            glRotatef(90, 1, 0, 0);
+            dibujaCilindro(0.05, 0.2);
+            glPopMatrix();
+            break;
+
+        case BRAZO_INF_DER:
+            glPushMatrix();
+            glTranslatef(0.25, 1.0, 0.0);
+            glRotatef(anguloBrazoX, 1.0, 0.0, 0.0);
+            glTranslatef(0.0, -0.2, 0.0);
+            glRotatef(anguloCodo, 1.0, 0.0, 0.0);
+            glRotatef(90, 1, 0, 0);
+            dibujaCilindro(0.045, 0.2);
+            glPopMatrix();
+            break;
+
+        case ARMA:
+            if(modeloImportado != nullptr) {
+                glPushMatrix();
+                glTranslatef(0.25, 1.0, 0.0);
+                glRotatef(anguloBrazoX, 1.0, 0.0, 0.0);
+                glTranslatef(0.0, -0.2, 0.0);
+                glRotatef(anguloCodo, 1.0, 0.0, 0.0);
+                glTranslatef(0.0, -0.23, 0.0);
+                glRotatef(anguloArmaZ, 0.0, 0.0, 1.0);
+                glRotatef(anguloArmaX, 1.0, 0.0, 0.0);
+                glRotatef(90, 1, 0, 0);
+                glRotatef(-90, 0, 1, 0);
+                glScalef(0.1, 0.1, 0.1);
+                modeloImportado->visualizar();
+                glPopMatrix();
+            }
+            break;
+
+        default:
+            break;
+    }
+
+    glEnable(GL_LIGHTING);
+}
+
+// Visualización para picking (con colores únicos)
+void igvEscena3D::visualizarParaPicking()
+{
+    glPushMatrix();
+    glTranslatef(despX,0,0);
+    glTranslatef(0, 0, despZ);
+    glRotatef(rotY, 0, 1, 0);
+
+    // Dibujar cada parte seleccionable con su color único
+    dibujarParteConColor(BRAZO_SUP_IZQ);
+    dibujarParteConColor(BRAZO_INF_IZQ);
+    dibujarParteConColor(BRAZO_SUP_DER);
+    dibujarParteConColor(BRAZO_INF_DER);
+    dibujarParteConColor(ARMA);
+
+    glPopMatrix();
+}
+
+// Método con las llamadas OpenGL para visualizar la escena
+void igvEscena3D::visualizar(void)
+{
+    GLfloat luz0[4] = {5, 5, 5, 1};
+    glLightfv(GL_LIGHT0, GL_POSITION, luz0);
+    glEnable(GL_LIGHT0);
+
+    if (ejes) pintar_ejes();
+
+    glPushMatrix();
+    glTranslatef(despX,0,0);
+    glTranslatef(0, 0, despZ);
+    glRotatef(rotY, 0, 1, 0);
+
+    dibujarCuerpoCompleto();
+
+    glPopMatrix();
+}
+
 bool igvEscena3D::get_ejes()
 {
     return ejes;
 }
 
-/**
- * M�todo para activar o desactivar el dibujado de los _ejes
- * @param _ejes Indica si hay que dibujar los ejes (true) o no (false)
- * @post El estado del objeto cambia en lo que respecta al dibujado de ejes,
- *       de acuerdo al valor pasado como par�metro
- */
 void igvEscena3D::set_ejes(bool _ejes)
 {
     ejes = _ejes;
+}
+
+// Seleccionar parte mediante picking
+PartesCuerpo igvEscena3D::seleccionarParte(int x, int y)
+{
+    // Buffer para leer el color
+    unsigned char pixel[3];
+
+    // Renderizar la escena en modo picking
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    visualizarParaPicking();
+
+    glFlush();
+    glFinish();
+
+    // Leer el pixel en la posición del ratón (invertir Y)
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    glReadPixels(x, viewport[3] - y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixel);
+
+    // Convertir el color a ID
+    PartesCuerpo id = (PartesCuerpo)(pixel[0] + (pixel[1] << 8) + (pixel[2] << 16));
+
+    // Restaurar color de fondo
+    glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+
+    // Guardar la parte seleccionada
+    parteSeleccionada = id;
+
+    return id;
+}
+
+void igvEscena3D::iniciarRotacion(int x, int y)
+{
+    rotandoConRaton = true;
+    ultimoMouseX = x;
+    ultimoMouseY = y;
+}
+
+void igvEscena3D::actualizarRotacion(int x, int y)
+{
+    if (!rotandoConRaton) return;
+
+    int deltaX = x - ultimoMouseX;
+    int deltaY = y - ultimoMouseY;
+
+    //float sensibilidad = 0.5f;
+
+    switch(parteSeleccionada) {
+        case BRAZO_SUP_IZQ:
+        case BRAZO_SUP_DER:
+            //setAnguloBrazoX(anguloBrazoX + deltaY * sensibilidad);
+            setAnguloBrazoX(anguloBrazoX + deltaY);
+            break;
+
+        case BRAZO_INF_IZQ:
+        case BRAZO_INF_DER:
+            setAnguloCodo(anguloCodo + deltaY); //* sensibilidad);
+            break;
+
+        case ARMA:
+            setAnguloArmaX(anguloArmaX + deltaY); //* sensibilidad);
+            setAnguloArmaZ(anguloArmaZ + deltaX); //* sensibilidad);
+            break;
+
+        default:
+            break;
+    }
+
+    ultimoMouseX = x;
+    ultimoMouseY = y;
+}
+
+void igvEscena3D::finalizarRotacion()
+{
+    rotandoConRaton = false;
+    parteSeleccionada = NINGUNA;
+}
+
+void igvEscena3D::movimentoAutomatico() {
+
 }
 
 igvMallaTriangulos* igvEscena3D::cargarOBJ(const std::string& filename) {
@@ -510,7 +425,7 @@ igvMallaTriangulos* igvEscena3D::cargarOBJ(const std::string& filename) {
                 std::stringstream ss(s);
                 unsigned int idx;
                 ss >> idx;
-                return idx - 1; // los OBJ empiezan en 1
+                return idx - 1;
             };
 
             v1 = parseIndex(s1);
@@ -525,7 +440,6 @@ igvMallaTriangulos* igvEscena3D::cargarOBJ(const std::string& filename) {
 
     file.close();
 
-    // Crear arrays planos para el constructor
     float* vertexArray = new float[vertices.size()];
     std::copy(vertices.begin(), vertices.end(), vertexArray);
 

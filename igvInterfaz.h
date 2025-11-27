@@ -6,73 +6,66 @@
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #else
-
 #include <GL/glut.h>
-
-#endif   // defined(__APPLE__) && defined(__MACH__)
+#endif // defined(__APPLE__) && defined(__MACH__)
 
 #include <string>
-
 #include "igvEscena3D.h"
 #include "igvCamara.h"
 
 /**
- * Los objetos de esta clase encapsulan la interfaz y el estado de la aplicaci髇
+ * Clase que gestiona la interfaz de usuario de la aplicaci贸n
  */
 class igvInterfaz
-{  private:
-      // Atributos
-      int ancho_ventana = 0; ///< Ancho de la ventana de visualizaci髇
-      int alto_ventana = 0;  ///< Alto de la ventana de visualizaci髇
+{
+private:
+    // Atributos
+    static igvInterfaz* _instancia; ///< Instancia 煤nica de la clase (patr贸n Singleton)
 
-      igvEscena3D escena; ///< Escena que se visualiza en la ventana definida por igvInterfaz
-      igvCamara camara; ///< C醡ara que se utiliza para visualizar la escena
+    int ancho_ventana = 500; ///< Ancho de la ventana de visualizaci贸n
+    int alto_ventana = 500;  ///< Alto de la ventana de visualizaci贸n
+    bool cambioVentana=false;
 
-      // Aplicaci髇 del patr髇 de dise駉 Singleton
-      static igvInterfaz* _instancia; ///< Direcci髇 de memoria del objeto 鷑ico de la clase
-      /// Constructor por defecto
-      igvInterfaz () = default;
+    igvEscena3D escena; ///< Escena 3D a visualizar
+    igvCamara camara;   ///< C谩mara de visualizaci贸n
 
+    igvPunto3D p0 = { 3, 2, 4 } ///< Posici锟絥 de la c锟絤ara
+    , r = { 0, 0, 0 } ///< Punto de referencia para las vistas
+    , V = { 0, 1.0, 0 } ///< Vector que indica la vertical en la vista
+    ;
 
-   public:
-      // Aplicaci髇 del patr髇 de dise駉 Singleton
-      static igvInterfaz& getInstancia ();
-      // Constructores por defecto y destructor
+    // Constructor y destructor privados (patr贸n Singleton)
+    igvInterfaz() = default;
+    ~igvInterfaz() = default;
 
-      /// Destructor
-      ~igvInterfaz () = default;
+    // M茅todos privados
+    static void crear_mundo();
 
-      // M閠odos est醫icos
-      // callbacks de eventos
-      // callbacks de eventos
-      static void keyboardFunc ( unsigned char key, int x, int y ); // m閠odo para control de eventos del teclado
-      static void reshapeFunc ( int w, int h ); // m閠odo que define la camara de vision y el viewport
-      // se llama autom醫icamente cuando se cambia el tama駉 de la ventana
-      static void displayFunc (); // m閠odo para visualizar la escena
+public:
+    // M茅todos p煤blicos
+    static igvInterfaz& getInstancia();
 
+    void configura_entorno(int argc, char** argv, int _ancho_ventana
+            , int _alto_ventana, int _pos_X, int _pos_Y
+            , std::string _titulo);
 
-      // Metodos
-      // crea el mundo que se visualiza en la ventana
-      void crear_mundo ();
+    void inicia_bucle_visualizacion();
 
-      // inicializa todos los par醡etros para crear una ventana de visualizaci髇
-      void configura_entorno ( int argc, char **argv // par醡etros del main
-                             , int _ancho_ventana, int _alto_ventana // ancho y alto de la ventana de visualizaci髇
-                             , int _pos_X, int _pos_Y // posici髇 inicial de la ventana de visualizaci髇
-                             , std::string _titulo // t韙ulo de la ventana de visualizaci髇
-                             );
-      void inicializa_callbacks (); // inicializa todos los callbacks
+    void inicializa_callbacks();
 
-      void inicia_bucle_visualizacion (); // visualiza la escena y espera a eventos sobre la interfaz
+    int get_ancho_ventana();
+    int get_alto_ventana();
+    void set_ancho_ventana(int _ancho_ventana);
+    void set_alto_ventana(int _alto_ventana);
 
-      // m閠odos get_ y set_ de acceso a los atributos
-      int get_ancho_ventana ();
+    void actualizar_vista_camara(int pos);
 
-      int get_alto_ventana ();
-
-      void set_ancho_ventana ( int _ancho_ventana );
-
-      void set_alto_ventana ( int _alto_ventana );
+    // Callbacks est谩ticas
+    static void keyboardFunc(unsigned char key, int x, int y);
+    static void reshapeFunc(int w, int h);
+    static void displayFunc();
+    static void mouseFunc(int button, int state, int x, int y);      // Nuevo
+    static void motionFunc(int x, int y);                            // Nuevo
 };
 
-#endif   // __IGVINTERFAZ
+#endif // __IGVINTERFAZ

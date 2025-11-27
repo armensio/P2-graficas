@@ -1,18 +1,14 @@
 #include <cstdlib>
 #include <stdio.h>
+#include <iostream>
 
 #include "igvInterfaz.h"
 
-// Aplicaci�n del patr�n de dise�o Singleton
+// Aplicación del patrón de diseño Singleton
 igvInterfaz* igvInterfaz::_instancia = nullptr;
 
-// M�todos p�blicos ----------------------------------------
+// Métodos públicos ----------------------------------------
 
-/**
- * M�todo para acceder al objeto �nico de la clase, en aplicaci�n del patr�n de
- * dise�o Singleton
- * @return Una referencia al objeto �nico de la clase
- */
 igvInterfaz& igvInterfaz::getInstancia()
 {
     if (!_instancia)
@@ -23,226 +19,317 @@ igvInterfaz& igvInterfaz::getInstancia()
     return *_instancia;
 }
 
-/**
- * Crea el mundo que se visualiza en la ventana
- */
 void igvInterfaz::crear_mundo()
 {
-    // inicia la c�mara
     _instancia->camara.set(IGV_PARALELA, {3, 2, 4}, {0, 0, 0}
-                           , {0, 1.0, 0}, -1 * 1.5, 1 * 1.5, -1 * 1.5, 1 * 1.5
-                           , -1 * 3, 200);
+            , {0, 1.0, 0}, -1 * 1.5, 1 * 1.5, -1 * 1.5, 1 * 1.5
+            , -1 * 3, 200);
 }
 
-/**
- * Inicializa todos los par�metros para crear una ventana de visualizaci�n
- * @param argc N�mero de par�metros por l�nea de comandos al ejecutar la
- *             aplicaci�n
- * @param argv Par�metros por l�nea de comandos al ejecutar la aplicaci�n
- * @param _ancho_ventana Ancho inicial de la ventana de visualizaci�n
- * @param _alto_ventana Alto inicial de la ventana de visualizaci�n
- * @param _pos_X Coordenada X de la posici�n inicial de la ventana de
- *               visualizaci�n
- * @param _pos_Y Coordenada Y de la posici�n inicial de la ventana de
- *               visualizaci�n
- * @param _titulo T�tulo de la ventana de visualizaci�n
- * @pre Se asume que todos los par�metros tienen valores v�lidos
- * @post Cambia el alto y ancho de ventana almacenado en el objeto
- */
 void igvInterfaz::configura_entorno(int argc, char** argv, int _ancho_ventana
-                                    , int _alto_ventana, int _pos_X, int _pos_Y
-                                    , std::string _titulo)
+        , int _alto_ventana, int _pos_X, int _pos_Y
+        , std::string _titulo)
 {
-    // inicializaci�n de las variables de la interfaz
     ancho_ventana = _ancho_ventana;
     alto_ventana = _alto_ventana;
 
-    // inicializaci�n de la ventana de visualizaci�n
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(_ancho_ventana, _alto_ventana);
     glutInitWindowPosition(_pos_X, _pos_Y);
     glutCreateWindow(_titulo.c_str());
 
-    glEnable(GL_DEPTH_TEST); // activa el ocultamiento de superficies por z-buffer
-    glClearColor(1.0, 1.0, 1.0, 0.0); // establece el color de fondo de la ventana
+    glEnable(GL_DEPTH_TEST);
+    glClearColor(1.0, 1.0, 1.0, 0.0);
 
-    glEnable(GL_LIGHTING); // activa la iluminaci�n de la escena
-    glEnable(GL_NORMALIZE); // normaliza los vectores normales para c�lculo iluminaci�n
+    glEnable(GL_LIGHTING);
+    glEnable(GL_NORMALIZE);
 
-    crear_mundo(); // crea el mundo a visualizar en la ventana
+    crear_mundo();
 }
 
-/**
- * M�todo para visualizar la escena y esperar a eventos sobre la interfaz
- */
 void igvInterfaz::inicia_bucle_visualizacion()
 {
-    glutMainLoop(); // inicia el bucle de visualizaci�n de GLUT
+    glutMainLoop();
 }
 
-/**
- * M�todo para control de eventos del teclado
- * @param key C�digo de la tecla pulsada
- * @param x Coordenada X de la posici�n del cursor del rat�n en el momento del
- *          evento de teclado
- * @param y Coordenada Y de la posici�n del cursor del rat�n en el momento del
- *          evento de teclado
- * @pre Se asume que todos los par�metros tienen valores v�lidos
- * @post Los atributos de la clase pueden cambiar, dependiendo de la tecla pulsada
- */
+bool c_activo=false;
 void igvInterfaz::keyboardFunc(unsigned char key, int x, int y)
 {
     switch (key)
     {
-    case 'x': // Apartado A: rotar X positivo
-        _instancia->escena.incrX();
-        break;
-    case 'X': // Apartado A: rotar X negativo
-        _instancia->escena.decrX();
-        break;
-    case 'y': // Apartado A: rotar Y positivo
-        _instancia->escena.incrY();
-        break;
-    case 'Y': // Apartado C: rotar y negativo
-        _instancia->escena.decrY();
-        break;
-    case 'z': // Apartado C: rotar z positivo
-        _instancia->escena.incrZ();
-        break;
-    case 'Z': // Apartado C: rotar Z negativo
-        _instancia->escena.decrZ();
-        break;
-    case 'n':
-        _instancia->escena.getMalla()->cambiarnormales();
-        break;
-    case 'N':
-        _instancia->escena.getMalla()->cambiarnormales();
-        break;
-    case 'g':
-        _instancia->escena.getMalla()->cambiarvis();
-        break;
-    case 'G':
-        _instancia->escena.getMalla()->cambiarvis();
-        break;
-    case 'w':
-        _instancia->escena.setAnguloBrazoX(_instancia->escena.getAnguloBrazoX()-5);
-        break;
-    case 'W':
-        _instancia->escena.setAnguloBrazoX(_instancia->escena.getAnguloBrazoX()+5);
-        break;
-    case 't':
-        _instancia->escena.setAnguloArmaX(_instancia->escena.getAnguloArmaX()+5);
-        break;
-    case 'T':
-        _instancia->escena.setAnguloArmaX(_instancia->escena.getAnguloArmaX()-5);
-        break;
-    case 'r':
-        _instancia->escena.setAnguloArmaZ(_instancia->escena.getAnguloArmaZ()+5);
-        break;
-    case 'R':
-        _instancia->escena.setAnguloArmaZ(_instancia->escena.getAnguloArmaZ()-5);
-        break;
-    case 'E':
-        _instancia->escena.setAnguloCodo(_instancia->escena.getAnguloCodo()+5);
-        break;
-    case 'e':
-        _instancia->escena.setAnguloCodo(_instancia->escena.getAnguloCodo()-5);
-        break;
+        case 'x':
+            _instancia->escena.incrX();
+            break;
+        case 'X':
+            _instancia->escena.decrX();
+            break;
+        case 'y':
+            _instancia->escena.incrY();
+            break;
+        case 'Y':
+            _instancia->escena.decrY();
+            break;
+        case 'z':
+            _instancia->escena.incrZ();
+            break;
+        case 'Z':
+            _instancia->escena.decrZ();
+            break;
+        case 'n':
+        case 'N':
+            if(_instancia->escena.getMalla())
+                _instancia->escena.getMalla()->cambiarnormales();
+            break;
+        case 'g':
+        case 'G':
+            if(_instancia->escena.getMalla())
+                _instancia->escena.getMalla()->cambiarvis();
+            break;
+        case 'q':
+            _instancia->escena.setAnguloBrazoX(_instancia->escena.getAnguloBrazoX()-5);
+            break;
+        case 'Q':
+            _instancia->escena.setAnguloBrazoX(_instancia->escena.getAnguloBrazoX()+5);
+            break;
+        case 't':
+            _instancia->escena.setAnguloArmaX(_instancia->escena.getAnguloArmaX()+5);
+            break;
+        case 'T':
+            _instancia->escena.setAnguloArmaX(_instancia->escena.getAnguloArmaX()-5);
+            break;
+        case 'r':
+            _instancia->escena.setAnguloArmaZ(_instancia->escena.getAnguloArmaZ()+5);
+            break;
+        case 'R':
+            _instancia->escena.setAnguloArmaZ(_instancia->escena.getAnguloArmaZ()-5);
+            break;
+        case 'E':
+            _instancia->escena.setAnguloCodo(_instancia->escena.getAnguloCodo()+5);
+            break;
+        case 'e':
+            _instancia->escena.setAnguloCodo(_instancia->escena.getAnguloCodo()-5);
+            break;
 
-    /*case 'e': // activa/desactiva la visualizacion de los ejes
-         _instancia->escena.set_ejes(_instancia->escena.get_ejes() ? false : true);
-        break;*/
-    case 27: // tecla de escape para SALIR
-        exit(1);
-        break;
+        case 'c':
+            c_activo=true;
+            break;
+
+        case 'C':
+            c_activo=false;
+            break;
+
+        case 'a':
+            if(c_activo) {
+                _instancia->camara.orbitar(0, 0.05);
+                _instancia->camara.aplicar();
+            }
+            break;
+
+        case 'd':
+            if(c_activo) {
+                _instancia->camara.orbitar(0, -0.05);
+                _instancia->camara.aplicar();
+            }
+            break;
+
+        case 'w':
+            if(c_activo) {
+                _instancia->camara.orbitar(0.05, 0);
+                _instancia->camara.aplicar();
+            }
+            break;
+
+        case 's':
+            if(c_activo) {
+                _instancia->camara.orbitar(-0.05, 0);
+                _instancia->camara.aplicar();
+            }
+            break;
+
+        case '4':
+            _instancia->cambioVentana = !_instancia->cambioVentana;
+            _instancia->actualizar_vista_camara(0);
+            break;
+
+        case 'u':
+            _instancia->escena.movimientoAutomatico();
+            break;
+
+        case 27: // ESC
+            exit(1);
+            break;
     }
-    glutPostRedisplay(); // renueva el contenido de la ventana de visi�n
+    glutPostRedisplay();
+}
+
+void igvInterfaz::actualizar_vista_camara(int pos) {
+    switch (pos + 1) {
+        case 1:
+            _instancia->camara.set(p0, r, V); //Básico
+            break;
+        case 2:
+            _instancia->camara.set(igvPunto3D(0, 5, 0), igvPunto3D(0, 0, 0), igvPunto3D(1, 0, 0)); //Planta
+            break;
+        case 3:
+            _instancia->camara.set(igvPunto3D(5, 0, 0), igvPunto3D(0, 0, 0), igvPunto3D(0, 1, 0)); //Alzado
+            break;
+        case 4:
+            _instancia->camara.set(igvPunto3D(0, 0, 5), igvPunto3D(0, 0, 0), igvPunto3D(0, 1, 0)); //Perfil
+            break;
+    }
+
+    _instancia->camara.aplicar();
 }
 
 /**
- * M�todo que define la c�mara de visi�n y el viewport. Se llama autom�ticamente
- * cuando se cambia el tama�o de la ventana.
- * @param w Nuevo ancho de la ventana
- * @param h Nuevo alto de la ventana
- * @pre Se asume que todos los par�metros tienen valores v�lidos
+ * Callback para eventos de clic del ratón
+ * @param button Botón del ratón presionado (GLUT_LEFT_BUTTON, GLUT_RIGHT_BUTTON, etc.)
+ * @param state Estado del botón (GLUT_DOWN o GLUT_UP)
+ * @param x Coordenada X del cursor en píxeles
+ * @param y Coordenada Y del cursor en píxeles
  */
+void igvInterfaz::mouseFunc(int button, int state, int x, int y)
+{
+    if (button == GLUT_LEFT_BUTTON)
+    {
+        if (state == GLUT_DOWN)
+        {
+            // Realizar picking para seleccionar la parte del cuerpo
+            PartesCuerpo parte = _instancia->escena.seleccionarParte(x, y);
+
+            if (parte != NINGUNA)
+            {
+                // Mostrar en consola qué parte se ha seleccionado
+                std::cout << "Parte seleccionada: ";
+                switch(parte) {
+                    case BRAZO_SUP_IZQ:
+                        std::cout << "Brazo Superior Izquierdo";
+                        break;
+                    case BRAZO_INF_IZQ:
+                        std::cout << "Brazo Inferior Izquierdo (Antebrazo)";
+                        break;
+                    case BRAZO_SUP_DER:
+                        std::cout << "Brazo Superior Derecho";
+                        break;
+                    case BRAZO_INF_DER:
+                        std::cout << "Brazo Inferior Derecho (Antebrazo)";
+                        break;
+                    case ARMA:
+                        std::cout << "Arma";
+                        break;
+                    default:
+                        break;
+                }
+                std::cout << std::endl;
+
+                // Iniciar el modo de rotación con el ratón
+                _instancia->escena.iniciarRotacion(x, y);
+            }
+            else
+            {
+                std::cout << "No se seleccionó ninguna parte" << std::endl;
+            }
+
+            // Redibujar la escena
+            glutPostRedisplay();
+        }
+        else if (state == GLUT_UP)
+        {
+            // Finalizar la rotación cuando se suelta el botón
+            if (_instancia->escena.estaRotando())
+            {
+                _instancia->escena.finalizarRotacion();
+                std::cout << "Rotación finalizada" << std::endl;
+            }
+        }
+    }
+}
+
+/**
+ * Callback para movimiento del ratón con botón presionado (arrastrar)
+ * @param x Coordenada X actual del cursor en píxeles
+ * @param y Coordenada Y actual del cursor en píxeles
+ */
+void igvInterfaz::motionFunc(int x, int y)
+{
+    // Solo procesar movimiento si hay una parte seleccionada
+    if (_instancia->escena.estaRotando())
+    {
+        // Actualizar la rotación de la parte seleccionada
+        _instancia->escena.actualizarRotacion(x, y);
+
+        // Redibujar la escena con la nueva rotación
+        glutPostRedisplay();
+    }
+}
+
 void igvInterfaz::reshapeFunc(int w, int h)
 {
-    // dimensiona el viewport al nuevo ancho y alto de la ventana
-    // guardamos valores nuevos de la ventana de visualizaci�n
     _instancia->set_ancho_ventana(w);
     _instancia->set_alto_ventana(h);
-
-    // establece los par�metros de la c�mara y de la proyecci�n
     _instancia->camara.aplicar();
 }
 
-/**
- * M�todo para visualizar la escena
- */
 void igvInterfaz::displayFunc()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // borra la ventana y el z-buffer
-
-    // se establece el viewport
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+/*
     glViewport(0, 0, _instancia->get_ancho_ventana(), _instancia->get_alto_ventana());
 
-    // establece los par�metros de la c�mara y de la proyecci�n
     _instancia->camara.aplicar();
 
-    //visualiza la escena
     _instancia->escena.visualizar();
+    */
+    if (!_instancia->cambioVentana) {
+        glViewport(0, 0, _instancia->get_ancho_ventana(), _instancia->get_alto_ventana());
+        //visualiza la escena
+        _instancia->escena.visualizar();
+    } else {
+        glViewport(0, _instancia->get_alto_ventana() / 2, _instancia->get_ancho_ventana() / 2,
+                   _instancia->get_alto_ventana() / 2);
+        _instancia->actualizar_vista_camara(0);
+        _instancia->escena.visualizar();
+        glViewport(_instancia->get_ancho_ventana() / 2, _instancia->get_alto_ventana() / 2,
+                   _instancia->get_ancho_ventana() / 2, _instancia->get_alto_ventana() / 2);
+        _instancia->actualizar_vista_camara(1);
+        _instancia->escena.visualizar();
+        glViewport(0, 0, _instancia->get_ancho_ventana() / 2, _instancia->get_alto_ventana() / 2);
+        _instancia->actualizar_vista_camara(2);
+        _instancia->escena.visualizar();
+        glViewport(_instancia->get_ancho_ventana() / 2, 0, _instancia->get_ancho_ventana() / 2,
+                   _instancia->get_alto_ventana() / 2);
+        _instancia->actualizar_vista_camara(3);
+        _instancia->escena.visualizar();
+    }
 
-    // refresca la ventana
-    glutSwapBuffers(); // se utiliza, en vez de glFlush(), para evitar el parpadeo
+    glutSwapBuffers();
 }
 
-/**
- * M�todo para inicializar los callbacks GLUT
- */
 void igvInterfaz::inicializa_callbacks()
 {
     glutKeyboardFunc(keyboardFunc);
     glutReshapeFunc(reshapeFunc);
     glutDisplayFunc(displayFunc);
+    glutMouseFunc(mouseFunc);        // Nuevo: callback para clics
+    glutMotionFunc(motionFunc);      // Nuevo: callback para movimiento con botón presionado
 }
 
-/**
- * M�todo para consultar el ancho de la ventana de visualizaci�n
- * @return El valor almacenado como ancho de la ventana de visualizaci�n
- */
 int igvInterfaz::get_ancho_ventana()
 {
     return ancho_ventana;
 }
 
-/**
- * M�todo para consultar el alto de la ventana de visualizaci�n
- * @return El valor almacenado como alto de la ventana de visualizaci�n
- */
 int igvInterfaz::get_alto_ventana()
 {
     return alto_ventana;
 }
 
-/**
- * M�todo para cambiar el ancho de la ventana de visualizaci�n
- * @param _ancho_ventana Nuevo valor para el ancho de la ventana de visualizaci�n
- * @pre Se asume que el par�metro tiene un valor v�lido
- * @post El ancho de ventana almacenado en la aplicaci�n cambia al nuevo valor
- */
 void igvInterfaz::set_ancho_ventana(int _ancho_ventana)
 {
     ancho_ventana = _ancho_ventana;
 }
 
-/**
- * M�todo para cambiar el alto de la ventana de visualizaci�n
- * @param _alto_ventana Nuevo valor para el alto de la ventana de visualizaci�n
- * @pre Se asume que el par�metro tiene un valor v�lido
- * @post El alto de ventana almacenado en la aplicaci�n cambia al nuevo valor
- */
 void igvInterfaz::set_alto_ventana(int _alto_ventana)
 {
     alto_ventana = _alto_ventana;

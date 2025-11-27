@@ -76,3 +76,10 @@ void igvPunto3D::set ( const double &x, const double &y, const double &z )
    c[Z] = z;
 }
 
+igvPunto3D igvPunto3D::operator-(const igvPunto3D &p) {
+    c[X]= this->c[X] - p.c[X];
+    c[Y]= this->c[Y] - p.c[Y];
+    c[Z]= this->c[Z] - p.c[Z];
+    return {c[X],c[Y],c[Z]};
+}
+

@@ -3,16 +3,16 @@
 
 #include "igvCamara.h"
 
-// Métodos constructores
+// Mï¿½todos constructores
 
 /**
  * Constructor parametrizado
- * @param _tipo Tipo de cámara (IGV_PARALELA, IGV_FRUSTUM o IGV_PERSPECTIVA)
- * @param _P0 Posición de la cámara (punto de visión)
- * @param _r Punto al que mira la cámara (punto de referencia)
+ * @param _tipo Tipo de cï¿½mara (IGV_PARALELA, IGV_FRUSTUM o IGV_PERSPECTIVA)
+ * @param _P0 Posiciï¿½n de la cï¿½mara (punto de visiï¿½n)
+ * @param _r Punto al que mira la cï¿½mara (punto de referencia)
  * @param _V Vector que indica la vertical
- * @pre Se asume que todos los parámetros tienen valores válidos
- * @post Los atributos de la nueva cámara serán iguales a los parámetros que se
+ * @pre Se asume que todos los parï¿½metros tienen valores vï¿½lidos
+ * @post Los atributos de la nueva cï¿½mara serï¿½n iguales a los parï¿½metros que se
  *       le pasan
  */
 igvCamara::igvCamara ( tipoCamara _tipo, igvPunto3D _P0, igvPunto3D _r
@@ -20,14 +20,14 @@ igvCamara::igvCamara ( tipoCamara _tipo, igvPunto3D _P0, igvPunto3D _r
                       , tipo ( _tipo )
 { }
 
-// Métodos públicos
+// Mï¿½todos pï¿½blicos
 /**
- * Define la posición de la cámara
- * @param _P0 Posición de la cámara (punto de visión)
- * @param _r Punto al que mira la cámara (punto de referencia)
+ * Define la posiciï¿½n de la cï¿½mara
+ * @param _P0 Posiciï¿½n de la cï¿½mara (punto de visiï¿½n)
+ * @param _r Punto al que mira la cï¿½mara (punto de referencia)
  * @param _V Vector que indica la vertical
- * @pre Se asume que todos los parámetros tienen valores válidos
- * @post Los atributos de la cámara cambian a los valores pasados como parámetro
+ * @pre Se asume que todos los parï¿½metros tienen valores vï¿½lidos
+ * @post Los atributos de la cï¿½mara cambian a los valores pasados como parï¿½metro
  */
 void igvCamara::set ( igvPunto3D _P0, igvPunto3D _r, igvPunto3D _V )
 {  P0 = _P0;
@@ -36,19 +36,19 @@ void igvCamara::set ( igvPunto3D _P0, igvPunto3D _r, igvPunto3D _V )
 }
 
 /**
- * Define una cámara de tipo paralela o frustum
- * @param _tipo Tipo de la cámara (IGV_PARALELA o IGV_FRUSTUM)
- * @param _P0 Posición de la cámara
- * @param _r Punto al que mira la cámara
+ * Define una cï¿½mara de tipo paralela o frustum
+ * @param _tipo Tipo de la cï¿½mara (IGV_PARALELA o IGV_FRUSTUM)
+ * @param _P0 Posiciï¿½n de la cï¿½mara
+ * @param _r Punto al que mira la cï¿½mara
  * @param _V Vector que indica la vertical
- * @param _xwmin Coordenada X mínima del frustum
- * @param _xwmax Coordenada X máxima del frustum
- * @param _ywmin Coordenada Y mínima del frustum
- * @param _ywmax Coordenada Y máxima del frustum
- * @param _znear Distancia de la cámara al plano Z near
- * @param _zfar Distancia de la cámara al plano Z far
- * @pre Se asume que todos los parámetros tienen valores válidos
- * @post Los atributos de la cámara cambian a los valores pasados como parámetro
+ * @param _xwmin Coordenada X mï¿½nima del frustum
+ * @param _xwmax Coordenada X mï¿½xima del frustum
+ * @param _ywmin Coordenada Y mï¿½nima del frustum
+ * @param _ywmax Coordenada Y mï¿½xima del frustum
+ * @param _znear Distancia de la cï¿½mara al plano Z near
+ * @param _zfar Distancia de la cï¿½mara al plano Z far
+ * @pre Se asume que todos los parï¿½metros tienen valores vï¿½lidos
+ * @post Los atributos de la cï¿½mara cambian a los valores pasados como parï¿½metro
  */
 void igvCamara::set ( tipoCamara _tipo, igvPunto3D _P0, igvPunto3D _r
    , igvPunto3D _V, double _xwmin, double _xwmax, double _ywmin
@@ -68,18 +68,18 @@ void igvCamara::set ( tipoCamara _tipo, igvPunto3D _P0, igvPunto3D _r
 }
 
 /**
- * Define una cámara de tipo perspectiva
- * @param _tipo Tipo de la cámara (IGV_PERSPECTIVA)
- * @param _P0 Posición de la cámara
- * @param _r Punto al que mira la cámara
+ * Define una cï¿½mara de tipo perspectiva
+ * @param _tipo Tipo de la cï¿½mara (IGV_PERSPECTIVA)
+ * @param _P0 Posiciï¿½n de la cï¿½mara
+ * @param _r Punto al que mira la cï¿½mara
  * @param _V Vector que indica la vertical
- * @param _angulo Ángulo de apertura
- * @param _raspecto Razón de aspecto
- * @param _znear Distancia de la cámara al plano Z near
- * @param _zfar Distancia de la cámara al plano Z far
- * @pre Se asume que todos los parámetros tienen valores válidos
- * @post Los atributos de la cámara cambian a los valores que se pasan como
- *       parámetros
+ * @param _angulo ï¿½ngulo de apertura
+ * @param _raspecto Razï¿½n de aspecto
+ * @param _znear Distancia de la cï¿½mara al plano Z near
+ * @param _zfar Distancia de la cï¿½mara al plano Z far
+ * @pre Se asume que todos los parï¿½metros tienen valores vï¿½lidos
+ * @post Los atributos de la cï¿½mara cambian a los valores que se pasan como
+ *       parï¿½metros
  */
 void igvCamara::set ( tipoCamara _tipo, igvPunto3D _P0, igvPunto3D _r
    , igvPunto3D _V, double _angulo, double _raspecto
@@ -97,8 +97,8 @@ void igvCamara::set ( tipoCamara _tipo, igvPunto3D _P0, igvPunto3D _r
 }
 
 /**
- * Aplica a los objetos de la escena la transformación de visión y la
- * transformación de proyección asociadas a los parámetros de la cámara
+ * Aplica a los objetos de la escena la transformaciï¿½n de visiï¿½n y la
+ * transformaciï¿½n de proyecciï¿½n asociadas a los parï¿½metros de la cï¿½mara
  */
 void igvCamara::aplicar ( void )
 {  glMatrixMode ( GL_PROJECTION );
@@ -120,10 +120,35 @@ void igvCamara::aplicar ( void )
 }
 
 /**
- * Realiza un zoom sobre la cámara
+ * Realiza un zoom sobre la cï¿½mara
  * @param factor Factor (en tanto por 100) que se aplica al zoom. Si el valor es
  *        positivo, se aumenta el zoom. Si es negativo, se reduce.
- * @pre Se asume que el parámetro tiene un valor válido
+ * @pre Se asume que el parï¿½metro tiene un valor vï¿½lido
  */
 void igvCamara::zoom ( double factor )
 { }
+
+void igvCamara::orbitar(float valor1, float valor2) {
+    igvPunto3D dir = P0 - r;
+    float radio = sqrt(dir[X]*dir[X] + dir[Y]*dir[Y] + dir[Z]*dir[Z]);
+
+    // Convertimos a coordenadas esfÃ©ricas
+    float angulo1 = atan2(dir[Z], dir[X]);  // Ã¡ngulo horizontal
+    float angulo2 = asin(dir[Y] / radio);     // Ã¡ngulo vertical
+
+    // Aplicamos desplazamientos
+    angulo1 += valor2;
+    angulo2 += valor1;
+
+    // Limitamos phi para evitar invertir la cÃ¡mara
+    const float limite = M_PI / 2.0f - 0.01f;
+    if (angulo2 > limite) angulo2 = limite;
+    if (angulo2 < -limite) angulo2 = -limite;
+
+    // Recalculamos la posiciÃ³n
+    dir[X] = radio * cos(angulo2) * cos(angulo1);
+    dir[Y] = radio * sin(angulo2);
+    dir[Z] = radio * cos(angulo2) * sin(angulo1);
+
+    P0 = dir;
+}

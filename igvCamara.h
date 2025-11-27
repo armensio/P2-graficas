@@ -14,49 +14,49 @@
 #include "igvPunto3D.h"
 
 /**
- * Etiquetas para los diferentes tipos de cámara
+ * Etiquetas para los diferentes tipos de cï¿½mara
  */
 enum tipoCamara
-{  IGV_PARALELA   ///< Proyección paralela
-   , IGV_FRUSTUM   ///< Proyección en perspectiva usando OpenGL
-   , IGV_PERSPECTIVA   ///< Proyección en perspectiva usando GLU
+{  IGV_PARALELA   ///< Proyecciï¿½n paralela
+   , IGV_FRUSTUM   ///< Proyecciï¿½n en perspectiva usando OpenGL
+   , IGV_PERSPECTIVA   ///< Proyecciï¿½n en perspectiva usando GLU
 };
 
 /**
- * Los objetos de esta clase representan cámaras de visualización en la aplicación
+ * Los objetos de esta clase representan cï¿½maras de visualizaciï¿½n en la aplicaciï¿½n
  */
 class igvCamara
 {  private:
       // atributos
-      tipoCamara tipo = IGV_PARALELA;  ///< Tipo de la cámara
+      tipoCamara tipo = IGV_PARALELA;  ///< Tipo de la cï¿½mara
 
-      // ventana de visión: parámetros proyección paralela y frustum
-      GLdouble xwmin = -3    ///< Coordenada X mínima del frustum/proyección paralela
-               , xwmax = 3   ///< Coordenada X máxima del frustum/proyección paralela
-               , ywmin = -3   ///< Coordenada Y mínima del frustum/proyección paralela
-               , ywmax = 3   ///< Coordenada Y máxima del frustum/proyección paralela
+      // ventana de visiï¿½n: parï¿½metros proyecciï¿½n paralela y frustum
+      GLdouble xwmin = -3    ///< Coordenada X mï¿½nima del frustum/proyecciï¿½n paralela
+               , xwmax = 3   ///< Coordenada X mï¿½xima del frustum/proyecciï¿½n paralela
+               , ywmin = -3   ///< Coordenada Y mï¿½nima del frustum/proyecciï¿½n paralela
+               , ywmax = 3   ///< Coordenada Y mï¿½xima del frustum/proyecciï¿½n paralela
                ;
 
-      // ventana de visión: parámetros proyección perspectiva
-      GLdouble angulo = 60   ///< Ángulo de apertura (proyección perspectiva)
-               , raspecto = 1   ///< Razón de aspecto (proyección perspectiva)
+      // ventana de visiï¿½n: parï¿½metros proyecciï¿½n perspectiva
+      GLdouble angulo = 60   ///< ï¿½ngulo de apertura (proyecciï¿½n perspectiva)
+               , raspecto = 1   ///< Razï¿½n de aspecto (proyecciï¿½n perspectiva)
                ;
 
       // distancias de planos cercano y lejano
-      GLdouble znear = 1    ///< Distancia de la cámara al plano Z near
-               , zfar = 200 ///< Distancia de la cámara al plano Z far
+      GLdouble znear = 1    ///< Distancia de la cï¿½mara al plano Z near
+               , zfar = 200 ///< Distancia de la cï¿½mara al plano Z far
                ;
 
-      // punto de visión
-      igvPunto3D P0 = { 3, 2, 4 };   ///< Posición de la cámara
+      // punto de visiï¿½n
+      igvPunto3D P0 = { 3, 2, 4 };   ///< Posiciï¿½n de la cï¿½mara
 
-      // punto de referencia de visión
-      igvPunto3D r = { 0, 0, 0 };   ///< Punto al que mira la cámara
+      // punto de referencia de visiï¿½n
+      igvPunto3D r = { 0, 0, 0 };   ///< Punto al que mira la cï¿½mara
 
       // vector arriba
       igvPunto3D V = { 0, 1, 0 };   ///< Vector que indica la vertical
 
-      // Métodos
+      // Mï¿½todos
 
    public:
       // Constructores por defecto y destructor
@@ -69,23 +69,25 @@ class igvCamara
       // Otros constructores
       igvCamara ( tipoCamara _tipo, igvPunto3D _P0, igvPunto3D _r, igvPunto3D _V );
 
-      // Métodos
-      // define la posición de la cámara
+      // Mï¿½todos
+      // define la posiciï¿½n de la cï¿½mara
       void set ( igvPunto3D _P0, igvPunto3D _r, igvPunto3D _V );
 
-      // define una cámara de tipo paralela o frustum
+      // define una cï¿½mara de tipo paralela o frustum
       void set ( tipoCamara _tipo, igvPunto3D _P0, igvPunto3D _r, igvPunto3D _V
                  , double _xwmin, double _xwmax, double _ywmin
                  , double _ywmax, double _znear, double _zfar );
 
-      // define una cámara de tipo perspectiva
+      // define una cï¿½mara de tipo perspectiva
       void set ( tipoCamara _tipo, igvPunto3D _P0, igvPunto3D _r, igvPunto3D _V
                  , double _angulo, double _raspecto, double _znear, double _zfar );
 
-      void aplicar ( void ); // aplica a los objetos de la escena la transformación
-                             // de visión y la transformación de proyección
-                             // asociadas a los parámetros de la cámara
-      void zoom ( double factor ); // realiza un zoom sobre la cámara
+      void aplicar ( void ); // aplica a los objetos de la escena la transformaciï¿½n
+                             // de visiï¿½n y la transformaciï¿½n de proyecciï¿½n
+                             // asociadas a los parï¿½metros de la cï¿½mara
+      void zoom ( double factor ); // realiza un zoom sobre la cï¿½mara
+
+      void orbitar(float valor1, float valor2);
 };
 
 #endif   // __IGVCAMARA

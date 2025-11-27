@@ -57,6 +57,8 @@ class igvPunto3D
       bool operator!= ( const igvPunto3D &p );
 
       void set ( const double &x, const double &y, const double &z );
+
+      igvPunto3D operator-(const igvPunto3D &p);
 };
 
 /**
